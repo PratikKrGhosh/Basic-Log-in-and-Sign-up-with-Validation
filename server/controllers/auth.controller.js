@@ -1,6 +1,7 @@
 import { createUser, getUserByUserName } from "../services/user.service.js";
 import { hashPassword, verifyHash } from "../utils/hash.js";
 import { signToken } from "../utils/token.js";
+import { logInSchema, signUpSchema } from "../validator/auth.validate.js";
 
 export const getSignupPage = (req, res) => {
   try {
@@ -25,7 +26,13 @@ export const signup = async (req, res) => {
   try {
     if (req.user) return res.redirect("/");
 
-    const { name, userName, email, password } = req.body;
+    const { data, error } = signUpSchema.safeParse(req.body);
+
+    if (error) {
+      req.flash("errors", error.errors[0].message);
+      return res.redirect("/signup");
+    }
+    const { name, userName, email, password } = data;
     const hashedPassword = await hashPassword(password);
     const [newUser] = await createUser({
       name,
@@ -50,7 +57,13 @@ export const login = async (req, res) => {
   try {
     if (req.user) return res.redirect("/");
 
-    const { userName, password } = req.body;
+    const { data, error } = logInSchema.safeParse(req.body);
+
+    if (error) {
+      req.flash("errors", error.errors[0].message);
+      return res.redirect("/login");
+    }
+    const { userName, password } = data;
 
     const [userData] = await getUserByUserName(userName);
 
@@ -71,12 +84,12 @@ export const login = async (req, res) => {
       return res.status(400).redirect("/login");
     }
 
-    const data = {
+    const tokenData = {
       name: userData.name,
       userName: userData.userName,
       email: userData.email,
     };
-    const token = await signToken(data);
+    const token = await signToken(tokenData);
     res.cookie("access_token", token);
 
     return res.status(200).redirect("/");
