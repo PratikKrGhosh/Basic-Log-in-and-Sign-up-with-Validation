@@ -30,3 +30,10 @@ form > button {
 form > button {
   cursor: pointer;
 }
+
+form > p {
+  padding: 0.5rem;
+  background-color: rgb(237, 170, 170);
+  color: rgb(164, 0, 0);
+  border-left: 4px solid red;
+}

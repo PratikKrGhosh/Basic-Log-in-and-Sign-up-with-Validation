@@ -5,7 +5,7 @@ import { signToken } from "../utils/token.js";
 export const getSignupPage = (req, res) => {
   try {
     if (req.user) return res.redirect("/");
-    return res.status(200).render("signup");
+    return res.status(200).render("signup", { errors: req.flash("errors") });
   } catch (err) {
     return res.status(404).send("Page Not Found");
   }
@@ -15,7 +15,7 @@ export const getLoginPage = (req, res) => {
   try {
     if (req.user) return res.redirect("/");
 
-    return res.status(200).render("login");
+    return res.status(200).render("login", { errors: req.flash("errors") });
   } catch (err) {
     return res.status(404).send("Page Not Found");
   }
@@ -34,11 +34,15 @@ export const signup = async (req, res) => {
       password: hashedPassword,
     });
 
-    if (!newUser) return res.status(400).send("Couldn't Create User");
+    if (!newUser) {
+      req.flash("errors", "Couldn't Create User");
+      return res.status(400).redirect("/signup");
+    }
 
     return res.status(200).redirect("/login");
   } catch (err) {
-    return res.status(400).send("Something Went Wrong");
+    req.flash("errors", "Something Went Wrong");
+    return res.status(400).redirect("/signup");
   }
 };
 
@@ -52,14 +56,20 @@ export const login = async (req, res) => {
 
     console.log(userData);
 
-    if (!userData) return res.status(404).send("User Does not Exist");
+    if (!userData) {
+      req.flash("errors", "Incorrect User name or Password");
+      return res.status(400).redirect("/login");
+    }
 
     const verifyPassword = await verifyHash({
       password,
       hashedPassword: userData.password,
     });
 
-    if (!verifyPassword) return res.status(400).json({ password: "wrong" });
+    if (!verifyPassword) {
+      req.flash("errors", "Incorrect User name or Password");
+      return res.status(400).redirect("/login");
+    }
 
     const data = {
       name: userData.name,
@@ -71,7 +81,8 @@ export const login = async (req, res) => {
 
     return res.status(200).redirect("/");
   } catch (err) {
-    return res.status(400).send("Something Went Wrong");
+    req.flash("errors", "Something Went Wrong");
+    return res.status(400).redirect("/login");
   }
 };
 
