@@ -30,7 +30,8 @@ app.use((req, res, next) => {
 app.use("/", authRouter);
 
 app.get("/", (req, res) => {
-  res.status(200).send("Home Page");
+  if (!req.user) return res.status(200).render("home");
+  res.status(200).render("index");
 });
 
 export default app;

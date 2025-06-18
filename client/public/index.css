@@ -1,0 +1,21 @@
+body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 1rem;
+  gap: 1rem;
+}
+
+a {
+  padding: 0.5rem;
+  text-decoration: none;
+  border: 2px solid red;
+  border-radius: 5px;
+  background-color: red;
+  color: #fff;
+}
+
+a:hover {
+  background: transparent;
+  color: red;
+}
