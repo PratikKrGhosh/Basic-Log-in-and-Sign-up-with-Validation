@@ -7,9 +7,12 @@ authRouter
   .route("/signup")
   .get(authController.getSignupPage)
   .post(authController.signup);
+
 authRouter
   .route("/login")
   .get(authController.getLoginPage)
   .post(authController.login);
+
+authRouter.route("/logout").get(authController.logout);
 
 export default authRouter;

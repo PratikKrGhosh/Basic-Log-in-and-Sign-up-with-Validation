@@ -4,6 +4,8 @@ import authRouter from "./routes/auth.route.js";
 
 const app = express();
 
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 app.set("view engine", "ejs");
 app.set("views", path.join(import.meta.dirname, "..", "client", "views"));
 app.use(
